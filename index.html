@@ -9,23 +9,108 @@
     <!-- Import WebGL Earth, the library used to generate the interactive globe -->
     <!-- documentation at http://examples.webglearth.com/ and https://sites.google.com/site/webglearth/ -->
     <script src="http://www.webglearth.com/v2/api.js"></script>
-
-    <!-- Import React -->
-    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-    
 </head>
 <body>
-    <div id="root">
-        Loading...
-        <noscript>Please enable JavaScript!</noscript>
+    <div id="app">
+        <div id="earth-div" v-once></div>
+        <ul id="articles-container">
+            <li v-for="article in articles">
+                [[ JSON.stringify(article) ]]
+            </li>
+        </ul>
     </div>
 
-    <script type="module" src="./js/index.js" ></script>
+    <script type="module">
+        import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.esm.browser.js'
+
+        const App = new Vue({
+            el: "#app",
+
+            // using [[ ]] as the Vue delimiters to avoid potential future conflicts with Jinja2 in Flask templates
+            delimiters: ["[[", "]]"],
+
+            data: {
+                articles: [
+                    {
+                        id: 0,
+                        headline: "headline",
+                        url: "https://bbc.com",
+                        image_url: "https://images.unsplash.com/photo-1615446636889-8dd69f9bdb35?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
+                        ,
+                        summary: "summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary "
+                        ,
+                        sentiment: ":)",
+                    },
+                    {
+                        id: 1,
+                        headline: "headline",
+                        url: "https://bbc.com",
+                        image_url: "https://images.unsplash.com/photo-1615446636889-8dd69f9bdb35?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
+                        ,
+                        summary: "summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary "
+                        ,
+                        sentiment: ":)",
+                    }
+                ],
+            },
+
+            // run when the DOM is mounted
+            mounted() {
+                const globeElementID = "earth-div";
+
+                function initialize_globe() {
+                    // equivalent to the documentation's initialize() function
+                    var earth = new WE.map(globeElementID, {
+                        sky: true, // adds stars to background
+                    });
+                    WE.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(earth);
+
+                    var marker = WE.marker([51.5, -0.09]).addTo(earth);
+                    marker.bindPopup("<b>Hello world!</b><br>I am a popup.<br /><span style='font-size:10px;color:#999'>Tip: Another popup is hidden in Cairo..</span>", {maxWidth: 150, closeButton: true}).openPopup();
+
+                    var marker2 = WE.marker([30.058056, 31.228889]).addTo(earth);
+                    marker2.bindPopup("<b>Cairo</b><br>Yay, you found me!", {maxWidth: 120, closeButton: false});
+
+                    earth.setView([51.505, 0], 6);
+
+                    
+                    // Start a simple rotation animation
+                    // http://examples.webglearth.com/#animation
+                    var before = null;
+                    requestAnimationFrame(function animate(now) {
+                        var c = earth.getPosition();
+                        var elapsed = before? now - before: 0;
+                        before = now;
+                        earth.setCenter([c[0], c[1] - 0.1*(elapsed/30)]);
+                        requestAnimationFrame(animate);
+                    });
+                }
+
+                window.addEventListener("load", () => {
+                    initialize_globe();
+                })
+            },
+
+            methods: {
+                
+            },
+        })
+    </script>
 </body>
 </html>
 
 <style>
+    /* These are taken directly from the WebGL Earth Documentation */
     html, body{padding: 0; margin: 0; background-color: black;}
-    #earth_div{top: 0; right: 0; bottom: 0; left: 0; position: absolute !important;}
-    </style>
+    #earth-div{top: 0; right: 0; bottom: 0; left: 0; position: absolute !important;}
+
+    /* this is to make text show up against black bg, remove this later once done testing */
+    body {
+        color: goldenrod;
+    }
+    #articles-container {
+        /* position element above the globe -  https://stackoverflow.com/questions/24539017/css-display-div-above-another-one/24539706 */
+        position: absolute;
+        transform: translate(10px, 30px);
+    }
+</style>
