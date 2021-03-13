@@ -5,8 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eco Update Synthesizer</title>
+
+    <!-- Import WebGL Earth, the library used to generate the interactive globe -->
+    <!-- documentation at http://examples.webglearth.com/ and https://sites.google.com/site/webglearth/ -->
+    <script src="http://www.webglearth.com/v2/api.js"></script>
+
+    <!-- Import React -->
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    
 </head>
 <body>
-    <p>Hello World!</p>
+    <div id="root">
+        Loading...
+        <noscript>Please enable JavaScript!</noscript>
+    </div>
+
+    <script type="module" src="./js/index.js" ></script>
 </body>
 </html>
+
+<style>
+    html, body{padding: 0; margin: 0; background-color: black;}
+    #earth_div{top: 0; right: 0; bottom: 0; left: 0; position: absolute !important;}
+    </style>
