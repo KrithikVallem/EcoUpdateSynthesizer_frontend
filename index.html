@@ -28,20 +28,17 @@
                 v-for="(article,index) in articles" 
                 :key="index"
                 v-b-toggle=" `summary-`+index "
-
-                :img-src="article.image_url"
-                img-top
-
-                :title="article.headline"
             >
+                <!-- 
+                    keep "b-card-img-lazy" in mind if performance suffers from loading a bunch of images at once
+                -->
+                <b-card
+                    :img-src="article.image_url"
+                    :img-alt="article.headline"
+                    overlay :title="article.headline"
+                >
+                </b-card>
 
-            <!-- If you want a card that just an image with overlayed text, search for 'overlay' in the B-Vue card docs
-                Note that this approach will require a separate container for the actual link button, summary, etc...
-                Because the collapsing summary stuff won't work when the card is just a text-overlayed image
-                (you can quickly trial this out by changing img-top to overlay in the b-card just above this)
-
-                also keep "b-card-img-lazy" in mind if performance suffers from loading a bunch of images at once
-             -->
                 <b-collapse :id=" `summary-`+index " >
                     <b-card-text>Sentiment is [[ article.sentiment ]]</b-card-text>
                     <b-button :href="article.url" target="_blank" rel="noopener">Open Article</b-button>
@@ -161,7 +158,7 @@
         and this was screwing up the small-screen-size grid collapsing of libraries like Bootstrap.
     */
 
-    /* Desktop Layout */
+    /* Large Screen Layout */
     @media screen and (min-width: 640px) {
         /* These are taken directly from the WebGL Earth Documentation. I think they make the globe and space around take up full screen */
         html, body{padding: 0; margin: 0; background-color: black;}
@@ -170,7 +167,7 @@
         /* Position articles-container on right 1/4 of screen */
         #articles-container {
             position: absolute;
-            left: 0; /* right:0; instead would place this on right side, where scrollbar merges into page's scrollbar -- might look nicer? */
+            right: 0; /* left:0; instead would place this on left side, but the scrollbar will show up */
             width: 29%;
         }
         #articles-container * {
@@ -178,12 +175,8 @@
         }
 
         /* Ensure that the articles are above the globe */
-        #earth-container {
-            z-index: 1;
-        }
-        #articles-container{
-            z-index: 2;
-        }
+        #earth-container { z-index: 1; }
+        #articles-container{ z-index: 2; }
         
     }
 
