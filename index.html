@@ -24,15 +24,27 @@
             <div id="earth-div" v-once></div>
         </div>
         <div id="articles-container" v-once>
-            <b-card v-for="(article,index) in articles" :key="index"
-                :title="article.headline"
+            <b-card 
+                v-for="(article,index) in articles" 
+                :key="index"
+                v-b-toggle=" `summary-`+index "
+
                 :img-src="article.image_url"
                 img-top
-            >
-                <b-button :href="article.url" target="_blank" rel="noopener">Open Article</b-button>
-                <b-button v-b-toggle=" `summary-`+index " >Show Summary</b-button>
 
+                :title="article.headline"
+            >
+
+            <!-- If you want a card that just an image with overlayed text, search for 'overlay' in the B-Vue card docs
+                Note that this approach will require a separate container for the actual link button, summary, etc...
+                Because the collapsing summary stuff won't work when the card is just a text-overlayed image
+                (you can quickly trial this out by changing img-top to overlay in the b-card just above this)
+
+                also keep "b-card-img-lazy" in mind if performance suffers from loading a bunch of images at once
+             -->
                 <b-collapse :id=" `summary-`+index " >
+                    <b-card-text>Sentiment is [[ article.sentiment ]]</b-card-text>
+                    <b-button :href="article.url" target="_blank" rel="noopener">Open Article</b-button>
                     <b-card-text>[[ article.summary ]]</b-card-text>
                 </b-collapse>
             </b-card>
@@ -49,7 +61,6 @@
 
             data: {
                 articles: (new Array(10).fill({
-                        id: 1,
                         headline: "headline",
                         url: "https://bbc.com",
                         image_url: "https://images.unsplash.com/photo-1615446636889-8dd69f9bdb35?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
@@ -99,7 +110,30 @@
             },
 
             methods: {
-                
+                articleCardClicked() {
+                    // opening/closing summary stuff is done automatically by bootstrap
+                    // center globe to first location pin
+                    // recolor all pins mentioned in article
+                    // scroll article card to top of articles container
+                    
+
+                    // alt:
+                    // set summary container to clicked article's summary
+                    // center globe to first location pin
+                    // recolor all pins mentioned in article
+                },
+
+                locationPinClicked() {
+                    // center map on pin
+                    // scroll articles container to correct article (first article mentioning clicked location)
+                    // recolor all pins mentioned in first article of location NOT pins that share any article with clicked pin
+
+                    // alt:
+                    // center map on pin
+                    // scroll articles container to correct article (first article mentioning clicked location)
+                    // recolor all pins mentioned in article NOT pins that share an article with clicked pin
+                    // fill summary container with summary of first article mentioning clicked location
+                },
             },
         })
     </script>
@@ -122,7 +156,7 @@
         overflow-y: scroll;
     }
 
-    /* I had to code media-queries by hand instead of using a built-in grid because of troubles integrating WebGL Earth.
+    /* I had to code media-queries by hand instead of using a pre-made grid because of troubles integrating WebGL Earth.
         WebGL Earth requires use of absolute position on desktop to make the earth and space fill the entire container
         and this was screwing up the small-screen-size grid collapsing of libraries like Bootstrap.
     */
@@ -136,8 +170,8 @@
         /* Position articles-container on right 1/4 of screen */
         #articles-container {
             position: absolute;
-            right: 0;
-            width: 25%;
+            left: 0; /* right:0; instead would place this on right side, where scrollbar merges into page's scrollbar -- might look nicer? */
+            width: 29%;
         }
         #articles-container * {
             background-color: #00000040;
