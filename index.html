@@ -20,12 +20,21 @@
 </head>
 <body>
     <div id="app">
-        <div id="earth-container">
+        <div id="earth-container" v-once>
             <div id="earth-div" v-once></div>
         </div>
         <div id="articles-container" v-once>
-            <b-card v-for="(article,index) in articles" :key="index">
-                [[ JSON.stringify(article) ]]
+            <b-card v-for="(article,index) in articles" :key="index"
+                :title="article.headline"
+                :img-src="article.image_url"
+                img-top
+            >
+                <b-button :href="article.url" target="_blank" rel="noopener">Open Article</b-button>
+                <b-button v-b-toggle=" `summary`+index " >Show Summary</b-button>
+
+                <b-collapse :id=" `summary`+index " >
+                    <b-card-text>[[ article.summary ]]</b-card-text>
+                </b-collapse>
             </b-card>
         </div>      
     </div>
