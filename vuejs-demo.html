@@ -19,16 +19,27 @@
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
 </head>
 <body>
-    <div id="app">
-        <div id="earth-container">
-            <div id="earth-div" v-once></div>
-        </div>
-        <div id="articles-container" v-once>
-            <b-card v-for="(article,index) in articles" :key="index">
-                [[ JSON.stringify(article) ]]
-            </b-card>
-        </div>      
-    </div>
+    <b-container id="app">
+        <b-row>
+
+            <b-col cols="9">
+                <div>11112</div>
+                <div id="earth-div"></div>
+            </b-col>
+            
+            <b-col cols="3">
+                <div>
+                    <ul id="articles-container">
+                        <li v-for="article in articles">
+                            [[ JSON.stringify(article) ]]
+                        </li>
+                    </ul>
+                </div>
+            </b-col>
+
+            
+        </b-row>
+    </b-container>
 
     <script>
 
@@ -39,7 +50,18 @@
             delimiters: ["[[", "]]"],
 
             data: {
-                articles: (new Array(10).fill({
+                articles: [
+                    {
+                        id: 0,
+                        headline: "headline",
+                        url: "https://bbc.com",
+                        image_url: "https://images.unsplash.com/photo-1615446636889-8dd69f9bdb35?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
+                        ,
+                        summary: "summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary "
+                        ,
+                        sentiment: ":)",
+                    },
+                    {
                         id: 1,
                         headline: "headline",
                         url: "https://bbc.com",
@@ -48,8 +70,8 @@
                         summary: "summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary summary "
                         ,
                         sentiment: ":)",
-                    })
-                ),
+                    }
+                ],
             },
 
             // run when the DOM is mounted
@@ -69,7 +91,7 @@
                     var marker2 = WE.marker([30.058056, 31.228889]).addTo(earth);
                     marker2.bindPopup("<b>Cairo</b><br>Yay, you found me!", {maxWidth: 120, closeButton: false});
 
-                    earth.setView([51.505, 0], 3);
+                    earth.setView([51.505, 0], 2);
 
                     
                     // Start a simple rotation animation
@@ -98,48 +120,12 @@
 </html>
 
 <style>
-    
+    /* These are taken directly from the WebGL Earth Documentation */
+    html, body{padding: 0; margin: 0; background-color: black;}
+    #earth-div{top: 0; right: 0; bottom: 0; left: 0; position: absolute !important;}
 
     /* this is to make text show up against black bg, remove this later once done testing */
     body {
         color: goldenrod;
-    }
-
-    #articles-container {
-        /* This makes it so that when you scroll down through all the cards, they only scroll inside the #articles-container 
-            Thus, the globe will always remain visible on screen
-        */
-        max-height: 100vh;
-        overflow-y: scroll;
-    }
-
-    /* I had to code media-queries by hand instead of using a built-in grid because of troubles integrating WebGL Earth.
-        WebGL Earth requires use of absolute position on desktop to make the earth and space fill the entire container
-        and this was screwing up the small-screen-size grid collapsing of libraries like Bootstrap.
-    */
-
-    /* Desktop Layout */
-    @media screen and (min-width: 640px) {
-        /* These are taken directly from the WebGL Earth Documentation. I think they make the globe and space around take up full screen */
-        html, body{padding: 0; margin: 0; background-color: black;}
-        #earth-container{top: 0; right: 0; bottom: 0; left: 0; position: absolute !important;}
-
-        #articles-container {
-            /* position element above the globe -  https://stackoverflow.com/questions/24539017/css-display-div-above-another-one/24539706 */
-            position: absolute;
-            right: 0;
-            width: 25%;
-        }
-        #articles-container * {
-            background-color: #00000040;
-        }
-        
-    }
-
-    /* Mobile Layout */
-    @media screen and (max-width: 640px) {
-        /* On mobile, change earth-container to position:relative to allow articles to flow under it */
-        html, body{padding: 0; margin: 0; background-color: black;}
-        #earth-container{top: 0; right: 0; bottom: 0; left: 0; position: relative !important;}
     }
 </style>
