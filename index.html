@@ -81,6 +81,9 @@
                     //WE.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(globe);
                     WE.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}').addTo(globe)
 
+                    // Zoom of 3 makes globe almost fill up screen, and nicely distracts from the big gap in the left side
+                    globe.setZoom(3);
+
                     
                     // Start a simple rotation animation
                     // http://examples.webglearth.com/#animation
