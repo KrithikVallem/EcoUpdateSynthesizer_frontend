@@ -25,7 +25,25 @@
     </div>
     <div id="app">
         <div id="articles-container">
-            <div>
+            <b-navbar toggleable="lg" type="dark" variant="success">
+                <b-navbar-brand href="#">Eco-Update <br> Synthesizer</b-navbar-brand>
+                <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+                <b-collapse id="nav-collapse" is-nav>
+                    <b-navbar-nav>
+                        <b-nav-item
+                            href="https://umecodata.github.io/website/"
+                            target="_blank" rel="noopener noreferrer"
+                        >EcoData</b-nav-item>
+                        <b-nav-item 
+                            href="https://github.com/KrithikVallem/Eco-Update-Synthesizer"
+                            target="_blank" rel="noopener noreferrer"
+                        >Github</b-nav-item>
+                    </b-navbar-nav>
+                </b-collapse>
+            </b-navbar>
+
+            <div id="searchbar-container">
                 <b-form-input 
                     v-model="searchQuery" 
                     placeholder="Search the articles!"
@@ -56,7 +74,11 @@
                     <b-button :href="item.url" target="_blank" rel="noopener" class="link-btn" >Open Article</b-button>
                     <b-card>
                         <b-card-text>Sentiment is [[ item.sentiment ]]</b-card-text>
-                        <b-badge v-for="(keyword, index) in item.keywords" :key="index" class="keyword-badge">[[ keyword ]]</b-badge>
+                        <b-badge 
+                            v-for="(keyword, index) in item.keywords" 
+                            :key="index" 
+                            class="keyword-badge"
+                        >[[ keyword ]]</b-badge>
                         <b-card-text>[[ item.summary ]]</b-card-text>
                     </b-card>
                 </b-collapse>
@@ -92,7 +114,7 @@
                     WE.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}').addTo(globe)
 
                     // Zoom of 3 makes globe almost fill up screen, and nicely distracts from the big gap in the left side
-                    globe.setZoom(4);
+                    globe.setZoom(3.5);
 
                     
                     // Start a simple rotation animation
@@ -188,7 +210,7 @@
         background-color:rgba(0,0,0,0.8);
 
         /* To make sure the entire screen is covered when search returns less than 3 results */
-        height: 100%;
+        height: 100%;      
     }
 
     /* all article cards */
@@ -219,18 +241,26 @@
         color: goldenrod;
     }
 
-    #search-bar {
+    /* make search bar stay above articles even after scrolling */
+    #searchbar-container {
+        position: -webkit-sticky; /* Safari */
         position: sticky;
+        top: 0;
+
+        z-index: 3;
+        background-color: rgba(0,0,0,0.9);
+
+        border-bottom: solid #28a745;
     }
 
     .link-btn {
-        background-color: MediumSeaGreen !important;
+        background-color: #28a745 !important;
         color: white;
         width: 100%;
     }
 
     .keyword-badge {
-        background-color: MediumSeaGreen !important;
+        background-color: #28a745 !important;
         margin: 0px 5px;
     }
 
@@ -243,6 +273,11 @@
     @media screen and (min-width: 640px) {
         /* On large screens, use absolute position to allow articles to float over the globe */
         #globe-container{top: 0; right: 0; bottom: 0; left: 0; position: absolute !important;}
+
+        /* globe needs to fill entire screen height on large screens */
+        #globe-div {
+            height: 100vh;
+        }
 
         /* Position articles-container on right side of screen */
         #articles-container {
@@ -261,5 +296,10 @@
     @media screen and (max-width: 640px) {
         /* On mobile, change globe-container to position:relative to allow articles to flow under it */
         #globe-container{top: 0; right: 0; bottom: 0; left: 0; position: relative !important;}
+
+        /* In Title at top, Eco-Update <br> Synthesizer -- ignore the line break on mobile so it looks better */
+        br {
+            display: none;
+        }
     }
 </style>
