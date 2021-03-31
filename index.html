@@ -19,16 +19,25 @@
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
 </head>
 <body>
+    <!-- This is now outside the Vue app, so it doesn't need to be re-rendered -->
+    <div id="globe-container" v-once>
+        <div id="globe-div" v-once></div>
+    </div>
     <div id="app">
-        <div id="globe-container" v-once>
-            <div id="globe-div" v-once></div>
-        </div>
-        <div id="articles-container" v-once>
+        <div id="articles-container">
+            <div>
+                <b-form-input 
+                    v-model="searchQuery" 
+                    placeholder="Search the articles!"
+                    id="searchbar"
+                ></b-form-input>
+            </div>
+
             <b-card 
-                v-for="(item,index) in articles" 
+                v-for="(item,index) in filteredArticles" 
                 :key="index"
                 class="article-card"
-                v-b-toggle=" `summary-`+index "
+                v-b-toggle=" `collapse-`+index "
                 @click="showLocationMarkers(item.locations)"
             >
                 <!-- 
@@ -43,7 +52,7 @@
                 >
                 </b-card>
 
-                <b-collapse :id=" `summary-`+index " class="article-details" >
+                <b-collapse :id=" `collapse-`+index " class="article-details" >
                     <b-button :href="item.url" target="_blank" rel="noopener" class="link-btn" >Open Article</b-button>
                     <b-card>
                         <b-card-text>Sentiment is [[ item.sentiment ]]</b-card-text>
@@ -64,9 +73,10 @@
             delimiters: ["[[", "]]"],
 
             data: {
-                articles: get_starter_articles_data(), // replace this function with flask template thing passing articles directly to this articles data variable
+                articles: get_starter_articles_data(), // replace this function with an api call to backend
                 globe: null,
                 currentArticleLocationMarkers: [],
+                searchQuery: ""
             },
 
             // run when the DOM is mounted
@@ -82,7 +92,7 @@
                     WE.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}').addTo(globe)
 
                     // Zoom of 3 makes globe almost fill up screen, and nicely distracts from the big gap in the left side
-                    globe.setZoom(3);
+                    globe.setZoom(4);
 
                     
                     // Start a simple rotation animation
@@ -102,6 +112,19 @@
                 window.addEventListener("load", () => {
                     this.globe = initializeGlobe();
                 })
+            },
+
+            computed: {
+                filteredArticles() {
+                    // empty search means return everything
+                    if (this.searchQuery === "") {
+                        return this.articles
+                    }
+
+                    const searchQuery = this.searchQuery.toLowerCase();
+
+                    return this.articles.filter(article => article.summary.toLowerCase().includes(searchQuery))
+                },
             },
 
             methods: {
@@ -161,6 +184,11 @@
         */
         max-height: 100vh;
         overflow-y: scroll;
+
+        background-color:rgba(0,0,0,0.8);
+
+        /* To make sure the entire screen is covered when search returns less than 3 results */
+        height: 100%;
     }
 
     /* all article cards */
@@ -174,10 +202,10 @@
     /* actual article image */
     #articles-container img {
         filter: brightness(0.6);
-        opacity: 0.6;
+        opacity: 0.8;
 
         /* in case image is a partially-transparent png */
-        background-color: rgba(0,0,0,0.6);
+        background-color: transparent;
     }
     
     /* article image text overlay */
@@ -187,8 +215,12 @@
 
     /* collapsed stuff */
     .article-details > * {
-        background-color: rgba(0,0,0,0.6) !important;
+        background-color: transparent !important;
         color: goldenrod;
+    }
+
+    #search-bar {
+        position: sticky;
     }
 
     .link-btn {
@@ -215,7 +247,7 @@
         /* Position articles-container on right side of screen */
         #articles-container {
             position: absolute;
-            right: 0; /* left:0; instead would place this on left side, but the scrollbar will show up */
+            left: 0; /* left:0; instead would place this on left side, but the scrollbar will show up */
             width: 30%;
         }
 
