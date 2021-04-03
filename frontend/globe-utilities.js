@@ -3,6 +3,7 @@ class GLOBE_UTILITIES {
     constructor() {
         this.globe = this.INITIALIZE_GLOBE();
         this.allMarkers = [];
+        this.articleCardScrollingFunction = null; // this will be assigned later after the Vue instance is created
     }
 
     INITIALIZE_GLOBE() {
@@ -42,7 +43,7 @@ class GLOBE_UTILITIES {
     // https://github.com/pointhi/leaflet-color-markers
     // create green active and grey inactive markers
     // NEW APPROACH - only pass around locations, and generate markers and add to globe on the fly
-    CREATE_MARKER(locationName, coordinates, isActive, linkedArticleHeadline) {
+    CREATE_MARKER(locationName, coordinates, isActive, articleURL) {
         const iconURL = 
             (isActive) 
             ? "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"
@@ -51,10 +52,13 @@ class GLOBE_UTILITIES {
 
         const newMarker = WE.marker(coordinates, iconURL).bindPopup(locationName, 75);
 
-        // close the popup 2.5 seconds after the marker is clicked
         newMarker.element.onclick = () => {
+            // close the popup 2.5 seconds after the marker is clicked
             setTimeout(() => newMarker.closePopup(), 2500);
-            console.log(linkedArticleHeadline);
+
+            // scroll the article card associated with the clicked marker to the top of the articles container
+            // this is assigned after the Vue Instance is created
+            this.articleCardScrollingFunction(articleURL);
         }
 
         this.allMarkers.push(newMarker);
@@ -64,15 +68,15 @@ class GLOBE_UTILITIES {
     CREATE_MARKERS_FOR_ARTICLES(activeArticles, inactiveArticles) {
         this.CLEAR_ALL_MARKERS();
 
-        const createMarkersForLocations = (locations, isActive, linkedArticleHeadline) => {
+        const createMarkersForLocations = (locations, isActive, articleURL) => {
             for (const locationName in locations) {
                 const coordinates = locations[locationName];
-                this.CREATE_MARKER(locationName, coordinates, isActive, linkedArticleHeadline);
+                this.CREATE_MARKER(locationName, coordinates, isActive, articleURL);
             }
         }
 
         // render inactive first, so active markers at same location will appear above them
-        inactiveArticles.forEach(a => createMarkersForLocations(a.locations, false, a.headline));
-        activeArticles.forEach(a => createMarkersForLocations(a.locations, true, a.headline));
+        inactiveArticles.forEach(a => createMarkersForLocations(a.locations, false, a.url));
+        activeArticles.forEach(a => createMarkersForLocations(a.locations, true, a.url));
     }
 }

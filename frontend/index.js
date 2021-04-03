@@ -9,16 +9,9 @@
 document.addEventListener("DOMContentLoaded", function() {
     // anything created outside of the Vue app is ALL_UPPERCASE
     const ALL_ARTICLES = get_starter_articles_data(); // replace this function with an api call to backend
-    // creates a clone of an object, without maintaining any previously existing array/object references
-    const DEEPCOPY = obj => JSON.parse(JSON.stringify(obj));
-
     const GLOBE = new GLOBE_UTILITIES();
-    GLOBE.CREATE_MARKERS_FOR_ARTICLES(ALL_ARTICLES, []);
 
-    // https://github.com/webglearth/webglearth2/issues/71
-    // marker onclick stuff ^^
-
-    const App = new Vue({
+    const VueInstance = new Vue({
         el: "#app",
     
         // using [[ ]] as the Vue delimiters to avoid potential future conflicts with Jinja2 in Flask templates
@@ -67,21 +60,19 @@ document.addEventListener("DOMContentLoaded", function() {
             },
         },
     });
+
+
+    // these go down here because we need to assign an articleCardScrollingFunction before we can create the
+    // map markers for each article. However, we need to create the Vue Instance first in order to 
+    // be able to scroll the articles container to the correct article card
+    GLOBE.articleCardScrollingFunction = (articleURL) => {
+        // https://stackoverflow.com/a/45659175
+        const articlesContainer = document.querySelector("#articles-container");
+        const articleCard = VueInstance.$refs[articleURL][0];
+        articlesContainer.scrollTop = articleCard.offsetTop;
+    };
+
+    // when page first loads, fill globe with active markers for every single article
+    GLOBE.CREATE_MARKERS_FOR_ARTICLES(ALL_ARTICLES, []);
 });
 
-
-
-
-
-
-function a() {
-    // center globe to the first location marker, if any exists
-        // panTo isn't working, so I'm using setView instead
-        for (const locationName in locations) {
-            const coordinates = locations[locationName];
-            this.globe.setView(coordinates, 3.5);
-
-            // break out after first iteration, because we only need to move the globe once
-            break;
-        }
-}

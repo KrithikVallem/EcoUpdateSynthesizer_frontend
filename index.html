@@ -61,7 +61,8 @@
                 :key="index"
                 class="article-card"
                 v-b-toggle=" `collapse-`+index "
-                @click="articleClickedFunction(item)"
+                @click="articleClickedFunction(item, index)"
+                :ref="item.url"
             >
                 <!-- 
                     keep "b-card-img-lazy" in mind if performance suffers from loading a bunch of images at once
