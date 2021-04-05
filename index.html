@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eco Update Synthesizer</title>
 
-    <!-- Import Babel Polyfill, so we can use newer js features in unsupported browsers (safari) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js" integrity="sha512-uzOpZ74myvXTYZ+mXUsPhDF+/iL/n32GDxdryI2SJronkEyKC8FBFRLiBQ7l7U/PTYebDbgTtbqTa6/vGtU23A==" crossorigin="anonymous"></script>
-
     <!-- Import WebGL Earth, the library used to generate the interactive globe -->
     <!-- documentation at http://examples.webglearth.com/ and https://sites.google.com/site/webglearth/ -->
     <script src="https://www.webglearth.com/v2/api.js"></script>
@@ -23,8 +20,8 @@
 
     <!-- Our custom css and js code -->
     <link type="text/css" rel="stylesheet" href="frontend/index.css">
-    <script src="frontend/globe-utilities.js" type="text/babel"></script>
-    <script src="frontend/index.js" type="text/babel" defer></script>
+    <script src="frontend/globe-utilities.js"></script>
+    <script src="frontend/index.js" defer></script>
 </head>
 <body>
     <!-- This is now outside the Vue app, so it doesn't need to be re-rendered -->
