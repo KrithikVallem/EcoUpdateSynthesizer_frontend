@@ -64,11 +64,14 @@ document.addEventListener("DOMContentLoaded", function() {
             this.globe.markerClickedFunction = (clickedMarkersArticleURL, clickedMarkerCoordinates) => {
                 const articlesContainer = document.querySelector("#articles-container");
                 const allArticleCards = document.querySelectorAll(".article-card");
+
                 // the ref attr for each article card in the html is set to its article.url
                 const articleCard = this.$refs[ clickedMarkersArticleURL ][0];
+                const articleCardImage = articleCard.querySelector("img");
 
                 // scroll the clicked marker's article card to the top of the articles container
-                articlesContainer.scrollTop = articleCard.offsetTop;
+                //articlesContainer.scrollTop = articleCard.offsetTop;
+                articleCardImage.scrollIntoView({behavior: "smooth", block: "center"});
 
                 // collapse all non-collapsed article cards
                 for (const card of allArticleCards) {
