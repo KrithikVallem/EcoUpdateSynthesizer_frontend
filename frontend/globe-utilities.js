@@ -1,21 +1,26 @@
-class GLOBE_UTILITIES {
+class Globe {
+    activeIconImage = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"
+    inactiveIconImage = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png"
+    zoomLevel = 3.5
+    markerClickedFunction = null; // this will be set after the VueApp is created
 
-    constructor() {
-        this.globe = this.INITIALIZE_GLOBE();
-        this.allMarkers = [];
-        this.articleCardScrollingFunction = null; // this will be assigned later after the Vue instance is created
+    constructor(allArticles) {
+        this.initializeGlobe(); // sets this.globe
+        this.initializeMarkers(allArticles); // sets this.allMarkers
+        // display active markers for every article
+        this.displayMarkersForArticles(allArticles, []);
     }
 
-    INITIALIZE_GLOBE() {
+    initializeGlobe() {
         // equivalent to the documentation's initialize() function
-        var globe = new WE.map("globe-div", {
+        const globe = new WE.map("globe-div", {
             sky: true, // adds stars to background
         });
         //WE.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(globe);
         WE.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}').addTo(globe)
 
         // Zoom of 3.5 makes globe almost fill up screen, and nicely distracts from the big gap in the left side
-        globe.setZoom(3.5);
+        globe.setZoom(this.zoomLevel);
 
         
         // Start a simple rotation animation
@@ -29,54 +34,76 @@ class GLOBE_UTILITIES {
             requestAnimationFrame(animate);
         });
 
-        return globe;
-    }
-
-    // remove all existing markers from the globe
-    CLEAR_ALL_MARKERS() {
-        for (const marker of this.allMarkers) {
-            marker.removeFrom(this.globe);
-        }
-        this.allMarkers = [];
+        this.globe = globe;
     }
 
     // https://github.com/pointhi/leaflet-color-markers
     // create green active and grey inactive markers
-    // NEW APPROACH - only pass around locations, and generate markers and add to globe on the fly
-    CREATE_MARKER(locationName, coordinates, isActive, articleURL) {
-        const iconURL = 
-            (isActive) 
-            ? "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"
-            : "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png"
-            ;
-
+    createMarker(locationName, coordinates, isActive, articleURL) {
+        const iconURL = isActive ? this.activeIconImage : this.inactiveIconImage;
+        
         const newMarker = WE.marker(coordinates, iconURL).bindPopup(locationName, 75);
 
         newMarker.element.onclick = () => {
             // close the popup 2.5 seconds after the marker is clicked
             setTimeout(() => newMarker.closePopup(), 2500);
 
-            // scroll the article card associated with the clicked marker to the top of the articles container
-            // this is assigned after the Vue Instance is created
-            this.articleCardScrollingFunction(articleURL);
+            // needs to be set from outside, after the VueApp is created
+            this.markerClickedFunction(articleURL, coordinates);
         }
 
-        this.allMarkers.push(newMarker);
-        newMarker.addTo(this.globe);
+        return newMarker;
     }
 
-    CREATE_MARKERS_FOR_ARTICLES(activeArticles, inactiveArticles) {
-        this.CLEAR_ALL_MARKERS();
+    // create markers for each location in each article
+    // and place them in an object to be retrieved later
+    initializeMarkers(allArticles) {
+        // maps article url => markers for that url
+        this.allMarkers = {};
 
-        const createMarkersForLocations = (locations, isActive, articleURL) => {
-            for (const locationName in locations) {
-                const coordinates = locations[locationName];
-                this.CREATE_MARKER(locationName, coordinates, isActive, articleURL);
+        for (const article of allArticles) {
+            this.allMarkers[ article.url ] = [];
+
+            for (const locationName in article.locations) {
+                const coordinates = article.locations[locationName];
+
+                const newMarker = this.createMarker(locationName, coordinates, true, article.url);
+
+                this.allMarkers[ article.url ].push(newMarker);
+            }
+        }
+    }
+
+    // remove all existing markers from the globe
+    clearAllMarkers() {
+        for (const url in this.allMarkers) {
+            for (const marker of this.allMarkers[url]) {
+                marker.removeFrom(this.globe);
+            }
+        }
+    }
+
+    displayMarkersForArticles(activeArticles, inactiveArticles) {
+        this.clearAllMarkers();
+
+        const displayMarkers = (articles, iconImage) => {
+            for (const article of articles) {
+                for (const marker of this.allMarkers[ article.url ]) {
+                    // look at the html structure to understand this
+                    marker.element.querySelector(".we-pm-icon")
+                        .style.backgroundImage = `url("${iconImage}")`;
+
+                    marker.addTo(this.globe);
+                }
             }
         }
 
         // render inactive first, so active markers at same location will appear above them
-        inactiveArticles.forEach(a => createMarkersForLocations(a.locations, false, a.url));
-        activeArticles.forEach(a => createMarkersForLocations(a.locations, true, a.url));
+        displayMarkers(inactiveArticles, this.inactiveIconImage);
+        displayMarkers(activeArticles, this.activeIconImage);
+    }
+
+    moveTo(coordinates) {
+        this.globe.setView(coordinates, this.zoomLevel);
     }
 }

@@ -61,7 +61,7 @@
                 :key="index"
                 class="article-card"
                 v-b-toggle=" `collapse-`+index "
-                @click="articleClickedFunction(item, index)"
+                @click="articleClickedFunction(item)"
                 :ref="item.url"
             >
                 <!-- 
@@ -85,7 +85,7 @@
                             :key="index" 
                             class="keyword-badge"
                         >[[ keyword ]]</b-badge>
-                        <b-card-text>[[ getInitialWords(item.summary, item.headline) ]]</b-card-text>
+                        <b-card-text>[[ getInitialWords(item.text, item.headline) ]]</b-card-text>
                     </b-card>
                 </b-collapse>
             </b-card>
