@@ -34,8 +34,9 @@ class Globe {
             // suggested by Anthony Marx to make it easier to click markers when zoomed in
             // original rotation speed in documention example was hardcoded as 0.1
             // Math.min is used because otherwise the globe spins crazy fast when you zoom out too far
+            const z = globe.getZoom();
             const rotationSpeed = Math.min( 0.1,
-                0.5 / ( globe.getZoom() * globe.getZoom() )
+                1 / ( 2 * z * z )
             );
 
             var c = globe.getPosition();
