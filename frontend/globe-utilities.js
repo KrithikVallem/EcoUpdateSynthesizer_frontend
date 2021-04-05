@@ -1,7 +1,7 @@
 class Globe {
     activeIconImage = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"
     inactiveIconImage = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png"
-    zoomLevel = 3.5
+    zoomLevel = 2.25
     markerClickedFunction = null; // this will be set after the VueApp is created
 
     constructor(allArticles) {

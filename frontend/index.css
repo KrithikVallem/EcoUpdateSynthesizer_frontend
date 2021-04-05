@@ -78,14 +78,18 @@ html, body{padding: 0; margin: 0; background-color: black;}
 /* Large Screen Layout */
 @media screen and (min-width: 640px) {
     /* On large screens, use absolute position to allow articles to float over the globe */
-    #globe-container{top: 0; right: 0; bottom: 0; left: 0; position: absolute !important;}
+    /* #globe-container{top: 0; right: 0; bottom: 0; left: 0; position: absolute !important;} */
+    /* ===== COMMENT OUT ONE OF THE TWO CSS LINES IMMEDIATELY ABOVE/BELOW THIS LINE DEPENDING ON WHICH LAYOUT YOU WANT ===== */
+    /* Alternate layout: have globe only take up right side of screen in separate container, without articles floating over it */
+    #globe-container{top: 0; right: 0; bottom: 0; left: 0; position: relative !important; width: 70%; float:right;}
+
 
     /* globe needs to fill entire screen height on large screens */
     #globe-div {
         height: 100vh;
     }
 
-    /* Position articles-container on right side of screen */
+    /* Position articles-container on left side of screen */
     #articles-container {
         position: absolute;
         left: 0; /* left:0; instead would place this on left side, but the scrollbar will show up */
