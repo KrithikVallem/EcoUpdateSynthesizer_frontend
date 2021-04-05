@@ -1,7 +1,7 @@
 class Globe {
     activeIconImage = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"
     inactiveIconImage = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png"
-    zoomLevel = 2.25
+    zoomLevel = 2.9
     markerClickedFunction = null; // this will be set after the VueApp is created
 
     constructor(allArticles) {
@@ -19,18 +19,23 @@ class Globe {
         //WE.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(globe);
         WE.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}').addTo(globe)
 
-        // Zoom of 3.5 makes globe almost fill up screen, and nicely distracts from the big gap in the left side
         globe.setZoom(this.zoomLevel);
-
         
         // Start a simple rotation animation
         // http://examples.webglearth.com/#animation
         var before = null;
         requestAnimationFrame(function animate(now) {
+
+            // this line isn't in the documentation
+            // I added it myself to change rotation speed depending on zoom level
+            // suggested by Anthony Marx to make it easier to click markers when zoomed in
+            // original rotation speed in documention example was hardcoded as 0.1
+            const rotationSpeed = 0.5 / ( globe.getZoom() * globe.getZoom() ) ;
+
             var c = globe.getPosition();
             var elapsed = before? now - before: 0;
             before = now;
-            globe.setCenter([c[0], c[1] - 0.1*(elapsed/30)]);
+            globe.setCenter([c[0], c[1] - rotationSpeed*(elapsed/30)]);
             requestAnimationFrame(animate);
         });
 
