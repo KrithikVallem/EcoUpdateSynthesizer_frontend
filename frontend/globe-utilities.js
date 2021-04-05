@@ -1,10 +1,13 @@
 class Globe {
-    activeIconImage = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"
-    inactiveIconImage = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png"
-    zoomLevel = 2.5
-    markerClickedFunction = null; // this will be set after the VueApp is created
-
     constructor(allArticles) {
+        // moved the class fields into constructor to better support older ios safari's
+        this.activeIconImage = "https://raw.githubusercontent.com/KrithikVallem/EcoUpdateSynthesizer_frontend/main/frontend/images/marker-icon-green.png"
+        this.inactiveIconImage = "https://raw.githubusercontent.com/KrithikVallem/EcoUpdateSynthesizer_frontend/main/frontend/images/marker-icon-grey.png"
+        this.zoomLevel = 2.5
+        this.markerClickedFunction = null; // this will be set after the VueApp is created
+
+        //== actual constructor stuff begins here ==
+
         this.initializeGlobe(); // sets this.globe
         this.initializeMarkers(allArticles); // sets this.allMarkers
         // display active markers for every article
